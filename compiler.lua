@@ -6,11 +6,8 @@ function comp:insertIntoCompiled(char,amount)
 	amount = amount or 0
 	-- the loop characters need special tables, lets filter those out
 	if char ~= "[" and char ~= "]" then
-		if amount == 1 then
-			--there is only 1 character, rather then to insert a table a single character is good enough
-			table.insert(self.compiled,char)
-			--make sure that the amount is higher then 1, then insert the correct table
-		elseif amount >1 then
+		--make sure that the amount is higher then 0, then insert the correct table
+		if amount >0 then
 			table.insert(self.compiled,{char=char,count=amount})
 		end
 	else
@@ -85,7 +82,7 @@ function comp:compile(str)
 				addToTable="{char="..value.char.."link="..value.link.."}"
 			else
 				--it is an compressed instruction, lets nicely print that
-				addToTable="{char="..value.char..",amount="..value.count.."}"
+				addToTable="{char="..value.char..",count="..value.count.."}"
 			end
 		end
 		--insert the nicely formatted instruction

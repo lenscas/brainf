@@ -68,16 +68,6 @@ end
 function inter:run(prog)
 	self.program = prog
 	local commands = {
-		[">"]=function(inter) inter.memory:shift("right") end,
-		["<"]=function(inter) inter.memory:shift("left") end,
-		["+"]=function(inter) inter.memory:add(1) end,
-		["-"]=function(inter) inter.memory:add(-1) end,
-		["."]=function(inter) inter.memory:print(); end,
-		[","]=function(inter) inter.memory:getInput() end,
-		["["]=function(inter) inter:checkJump()  end,
-		["]"]=function(inter) inter:checkJump(true) end,
-	}
-	local shortenedChars = {
 		[">"]=function(inter,data) inter.memory:shift("right",data.count) end,
 		["<"]=function(inter,data) inter.memory:shift("left",data.count) end,
 		["+"]=function(inter,data) inter.memory:add(data.count)end,
@@ -90,23 +80,13 @@ function inter:run(prog)
 	print("running")
 	repeat
 		local reachedEnd=false
-		local atChar = self:getCurChar()
-		if commands[atChar] then
-			commands[atChar](self)
-		elseif type(atChar) =="table" then
-			if shortenedChars[atChar.char] then
-				shortenedChars[atChar.char](self,atChar)
-			end
-		else
-			print(type(atChar))
-			print(atChar.char)
-			error("not comipiled correctly!")
-		end
+		local curCommand = self:getCurChar()
+		commands[curCommand.char](self,curCommand)
 		if not self:moveChar() then
 			reachedEnd = true
 		end
 	until(reachedEnd)
-	print("Done")
+	print("\nDone")
 	local mem = self.memory:getAllMemory()
 	for key,value in ipairs(mem) do
 		io.write("["..key.."]=>"..value.." ")
