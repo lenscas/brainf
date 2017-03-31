@@ -44,4 +44,7 @@ function memory:getInput(times)
 		until(valid)
 	end
 end
+function memory:getAllMemory()
+	return self.stored
+end
 return memory

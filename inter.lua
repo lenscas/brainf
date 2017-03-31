@@ -107,5 +107,10 @@ function inter:run(prog)
 		end
 	until(reachedEnd)
 	print("Done")
+	local mem = self.memory:getAllMemory()
+	for key,value in ipairs(mem) do
+		io.write("["..key.."]=>"..value.." ")
+	end
+	io.write("\n")
 end
 return inter
