@@ -1,8 +1,11 @@
 local inter = {}
+--the memory for the brainf program
 inter.memory = require("memory")
+--this will hold the program
 inter.program={}
+--hodls at what instruction the interperter is currently at
 inter.at = 1
-
+--this moves the instruction pointer by 1 to dir
 function inter:moveChar(dir)
 	dir = dir or "right"
 	if dir =="right" then
@@ -17,9 +20,11 @@ function inter:moveChar(dir)
 	end
 	return true
 end
+--this is just here to nicely get the current instruction
 function inter:getCurChar()
 	return self.program[inter.at] 
 end
+--this is the old method to "jump" to diffrent parts of the loop
 function inter:jumpToMatch(searchFor)
 	searchFor = searchFor or "["
 	local foundOtherSymbol = 0
@@ -45,6 +50,7 @@ function inter:jumpToMatch(searchFor)
 		end
 	until(hasJumped)
 end
+--this checks if the programneeds to make a jump and does so if needed
 function inter:checkJump(stayAtChar,data)
 	stayAtChar = stayAtChar or false
 	local num= inter.memory:getValueRaw()
@@ -58,6 +64,7 @@ function inter:checkJump(stayAtChar,data)
 		end
 	end
 end
+--this loads the program and runs it
 function inter:run(prog)
 	self.program = prog
 	local commands = {
@@ -71,8 +78,12 @@ function inter:run(prog)
 		["]"]=function(inter) inter:checkJump(true) end,
 	}
 	local shortenedChars = {
+		[">"]=function(inter,data) inter.memory:shift("right",data.count) end,
+		["<"]=function(inter,data) inter.memory:shift("left",data.count) end,
 		["+"]=function(inter,data) inter.memory:add(data.count)end,
 		["-"]=function(inter,data) inter.memory:add(data.count*-1) end,
+		["."]=function(inter,data) inter.memory:print(data.count); end,
+		[","]=function(inter,data) inter.memory:getInput(data.count) end,
 		["["]=function(inter,data) inter:checkJump(false,data) end,
 		["]"]=function(inter,data) inter:checkJump(true,data) end
 	}
@@ -92,10 +103,9 @@ function inter:run(prog)
 			error("not comipiled correctly!")
 		end
 		if not self:moveChar() then
-			print(self.at, #self.program)
 			reachedEnd = true
 		end
 	until(reachedEnd)
-	print("reached the end")
+	print("Done")
 end
 return inter
